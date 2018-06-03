@@ -142,7 +142,7 @@ public class applications extends Application {
             }
         }
         threadTimer.start();
-        test();
+
         widthWindow = (row * width) + size*3 ;
         heightWindow =(coll * (height-size/3))+size*6;
         window.setWidth(widthWindow);
@@ -205,33 +205,26 @@ public class applications extends Application {
 
     private List<Hexagon> getNeighbors(int x, int y) {
         List<Hexagon> neighbors = new ArrayList<>();
-
-        // ttt
-        // tXt
-        // ttt
-        int[] points = new int[]{
-                -1, -1,
-                -1, 0,
-                -1, 1,
-                0, -1,
-                0, 1,
-                1, -1,
-                1, 0,
-                1, 1
+        int[] even=new int[]{
+                0,-1,
+                1,-1,
+                -1,0,
+                1,0,
+                0,1,
+                1,1
         };
-
-
-        /**
-         *  tt
-         * txt
-         *  tt
-         * Для четных строк(котрые смещены)
-         *
-         */
-
-        for (int i = 0; i < points.length; i++) {
-            int dx = points[i];
-            int dy = points[++i];
+        int[] odd = new int[]{
+                -1,-1,
+                0,-1,
+                -1,0,
+                1,0,
+                -1,1,
+                0,1
+        };
+        if(y%2!=0){
+        for (int i = 0; i < even.length; i++) {
+            int dx = even[i];
+            int dy = even[++i];
 
             int newX = x + dx;
             int newY = y + dy;
@@ -240,7 +233,22 @@ public class applications extends Application {
                     && newY >= 0 && newY < coll) {
                 neighbors.add(hexagons[newX][newY]);
             }
+        }}
+        else{
+            for (int i = 0; i < odd.length; i++) {
+                int dx = odd[i];
+                int dy = odd[++i];
+
+                int newX = x + dx;
+                int newY = y + dy;
+
+                if (newX >= 0 && newX < row
+                        && newY >= 0 && newY < coll) {
+                    neighbors.add(hexagons[newX][newY]);
+                }
+            }
         }
+
 
         return neighbors;
     }
@@ -368,11 +376,7 @@ public class applications extends Application {
         return false;
     }
 
-    private void test() {
-        for (Point3D[] line: coor3D)
-            for (Point3D p: line)
-                System.out.println(p.getX() + " / "+p.getZ()+" / "+ p.getY());
-    }
+
 
 }
 
