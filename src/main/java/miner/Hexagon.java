@@ -20,6 +20,9 @@ public class Hexagon extends StackPane {
     public boolean check = false;
     private long bombAround;
 
+    public Hexagon(){
+
+    }
     public Hexagon(Point2D center, int size) {
         origin =center;
         hexagon = new Polyline(
