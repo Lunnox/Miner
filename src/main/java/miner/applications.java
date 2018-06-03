@@ -27,7 +27,7 @@ public class applications extends Application {
     private Point3D[][] coor3D;
     private Point2D coordinate;
     private final int size = 15, minRow=10,minColl=10, maxRow=24, maxColl=30;
-
+    private boolean buildingBombs = false;
     private int row = 10, coll = 10, countBobm = 9, countEmptyCell=0;
     private boolean[][] status;
     private int baseX, baseY, offsetX;
@@ -65,13 +65,13 @@ public class applications extends Application {
         });
         mainPane.getChildren().add(boardPane);
         menu.prefWidthProperty().bind(window.widthProperty());
+        timerField.textProperty().bind(timer.messageProperty());
         timerField.setDisable(true);
         flagField.setDisable(true);
         timerField.setFocusTraversable(false);
         flagField.setFocusTraversable(false);
         HBox box = new HBox(timerField, flagField);
         box.prefWidthProperty().bind(window.widthProperty());
-        timerField.textProperty().bind(timer.messageProperty());
         AnchorPane.setBottomAnchor(box, 10.0);
         mainPane.getChildren().add(box);
         mainPane.getChildren().add(menu);
@@ -93,12 +93,16 @@ public class applications extends Application {
     }
 
     private void buildBoard() {
-        threadTimer = new Thread(timer);
+        threadTimer.start();
+
+
+        buildingBombs=true;
+
         baseX = 0;
         baseY = 40;
         boardPane.setDisable(false);
         hexagons = new Hexagon[row][coll];
-        Random rnd = new Random();
+
         status = new boolean[row][coll];
         coor3D = new Point3D[row][coll];
         for (int i = 0; i < row; i++) {
@@ -118,7 +122,7 @@ public class applications extends Application {
             baseY = 40;
             baseX += vertical(size) + size / 3;
         }
-        int x,y,countSetBomb = 0;
+      /*  int x,y,countSetBomb = 0;
         while (countSetBomb < countBobm) {
             do {
                x = rnd.nextInt(row);
@@ -135,13 +139,13 @@ public class applications extends Application {
                     hexagons[x][y].setCountBombAround(bombs);
                 }
             }
-        }
+        }*/
         for (Hexagon[] line : hexagons) {
             for (Hexagon test : line) {
                 boardPane.getChildren().add(test);
             }
         }
-        threadTimer.start();
+
 
         widthWindow = (row * width) + size*3 ;
         heightWindow =(coll * (height-size/3))+size*6;
@@ -181,6 +185,7 @@ public class applications extends Application {
                                 createGame("Повторить?");
                                 return;
                             } else {
+                                generationBombs();
                                 if (hexagons[i][j].check) return;
                                 receiveClick(i, j);
                                 if (pro()){
@@ -188,6 +193,7 @@ public class applications extends Application {
                                         hexagons[id.getKey()][id.getValue()].cellBang();
                                         boardPane.setDisable(true);
                                         try {
+                                            timer.stop();
                                              threadTimer.interrupt();
                                             threadTimer = null;
                                         } catch (NullPointerException e1) {
@@ -268,6 +274,14 @@ public class applications extends Application {
                     }
     }
     private void createGame(String title) {//метод запроса на создание поля
+
+        try {
+            if (threadTimer.isAlive()){
+            timer.stop();
+            threadTimer.interrupt();
+            threadTimer = null;}
+        } catch (NullPointerException e1) {
+        }
         ButtonType buttonTypeOk = new ButtonType("Да", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonCancel = new ButtonType("Нет", ButtonBar.ButtonData.CANCEL_CLOSE);
         Dialog<Pair<Pair<String, String>, String>> inputDialog = new Dialog<>();
@@ -311,6 +325,8 @@ public class applications extends Application {
                 System.out.println(row + " " + coll + "    " + countBobm);
                 Platform.runLater(() -> {
                     boardPane.getChildren().clear();//очищаем поле от старых элементов
+                    threadTimer = new Thread(timer);
+                    timerField.textProperty().bind(timer.messageProperty());
                     buildBoard();
                 });
             }
@@ -318,6 +334,7 @@ public class applications extends Application {
             }
             return null;
         });
+
         inputDialog.showAndWait();
     }
 
@@ -376,6 +393,35 @@ public class applications extends Application {
         return false;
     }
 
+
+    private void generationBombs(){
+        System.out.println(buildingBombs);
+        if (!buildingBombs){
+            return;
+        }
+        buildingBombs=false;
+        int x,y,countSetBomb = 0;
+        Random rnd = new Random();
+
+
+            while (countSetBomb < countBobm) {
+                do {
+                    x = rnd.nextInt(row);
+                    y = rnd.nextInt(coll);
+                } while (hexagons[x][y].isHasBomb()||hexagons[x][y].isOpen());
+                hexagons[x][y].setHasBomb(true);
+                shaheed.add(new Pair<>(x, y));
+                countSetBomb++;
+            }
+            for (y = 0; y < coll; y++) {
+                for (x = 0; x < row; x++) {
+                    long bombs = getNeighbors(x, y).stream().filter(t -> t.isHasBomb()).count();
+                    if (bombs > 0) {
+                        hexagons[x][y].setCountBombAround(bombs);
+                    }
+                }
+            }
+    }
 
 
 }

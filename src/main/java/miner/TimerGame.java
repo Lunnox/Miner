@@ -25,5 +25,8 @@ public class TimerGame extends Task<Void> {
         }
         return null;
     }
+    public void stop(){
+        this.cancel();
+    }
 }
 
