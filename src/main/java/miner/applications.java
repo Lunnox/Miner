@@ -12,6 +12,8 @@ package miner;
 import javafx.application.Application;
 import javafx.application.Platform;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -24,6 +26,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Pair;
 
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -36,6 +39,7 @@ public class applications extends Application {
     private Point3D[][] coor3D;
     private Point2D coordinate;
     private final int size = 15, minRow=10,minColl=10, maxRow=24, maxColl=30;
+    private final double K = 0.7;
     private boolean buildingBombs = false;
     private int row = 10, coll = 10, countBobm = 9, countEmptyCell=0;
     private boolean[][] status;
@@ -129,7 +133,9 @@ public class applications extends Application {
                 baseY += horizontal(size) + (0.66 * size);
             }
             baseY = 40;
+            if(coll%2==0)
             baseX += vertical(size) + size / 3;
+            else baseX+=vertical(size) -8;
         }
 
         for (Hexagon[] line : hexagons) {
@@ -177,7 +183,7 @@ public class applications extends Application {
                                 createGame("Повторить?");
                                 return;
                             } else {
-                                generationBombs();
+                                generationBombs(i,j);
                                 if (hexagons[i][j].check) return;
                                 receiveClick(i, j);
                                 if (pro()){
@@ -274,6 +280,7 @@ public class applications extends Application {
             threadTimer = null;}
         } catch (NullPointerException e1) {
         }
+        int maxBomb=10;
         ButtonType buttonTypeOk = new ButtonType("Да", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonCancel = new ButtonType("Нет", ButtonBar.ButtonData.CANCEL_CLOSE);
         Dialog<Pair<Pair<String, String>, String>> inputDialog = new Dialog<>();
@@ -293,22 +300,25 @@ public class applications extends Application {
         grid.add(collField, 2, 2);
         grid.add(label3, 1, 3);
         grid.add(bombField, 2, 3);
+
         inputDialog.getDialogPane().setContent(grid);
         inputDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
         inputDialog.getDialogPane().getButtonTypes().add(buttonCancel);
         inputDialog.setResultConverter(param -> {
             if (param.equals(buttonTypeOk)) {
-                coll = (Integer.parseInt(rowField.getText())< maxRow)?
-                        (Integer.parseInt(rowField.getText())>minRow)?
-                                Integer.parseInt(rowField.getText()):minRow : maxRow  ;
+                coll = (Integer.parseInt(rowField.getText()) < maxRow) ?
+                        (Integer.parseInt(rowField.getText()) > minRow) ?
+                                Integer.parseInt(rowField.getText()) :minRow :maxRow;
+
                 row = (Integer.parseInt(collField.getText())< maxColl)?
                         (Integer.parseInt(collField.getText())>minColl)?
                                 Integer.parseInt(collField.getText()):minColl : maxColl  ;
-                int maxBomb = row * coll -5;
+                int maxBomb1 = (int)((row * coll)*K) ;
                 int minBomb = 3;
                 countBobm = (Integer.parseInt(bombField.getText())< row * coll)?
                         (Integer.parseInt(bombField.getText())>minBomb)?
-                                Integer.parseInt(bombField.getText()):minBomb : maxBomb  ;
+                                Integer.parseInt(bombField.getText()):minBomb : maxBomb1  ;
+
                 countCheckCells = countBobm;
                 countEmptyCell = row*coll - countBobm;
                 System.out.println(countEmptyCell);
@@ -386,7 +396,7 @@ public class applications extends Application {
     }
 
 
-    private void generationBombs(){
+    private void generationBombs(int q, int w){
         System.out.println(buildingBombs);
         if (!buildingBombs){
             return;
@@ -400,7 +410,7 @@ public class applications extends Application {
                 do {
                     x = rnd.nextInt(row);
                     y = rnd.nextInt(coll);
-                } while (hexagons[x][y].isHasBomb()||hexagons[x][y].isOpen());
+                } while (hexagons[x][y].isHasBomb()||hexagons[x][y].isOpen()|| (x==q && y==w));
                 hexagons[x][y].setHasBomb(true);
                 shaheed.add(new Pair<>(x, y));
                 countSetBomb++;
@@ -413,6 +423,7 @@ public class applications extends Application {
                     }
                 }
             }
+
     }
 
 
