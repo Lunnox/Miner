@@ -1,3 +1,12 @@
+/**
+ *
+ *
+ *
+ * Компилировать в mvnConsole
+ * mvn clean compile assembly:single
+ *
+ */
+
 package miner;
 
 import javafx.application.Application;
@@ -122,24 +131,7 @@ public class applications extends Application {
             baseY = 40;
             baseX += vertical(size) + size / 3;
         }
-      /*  int x,y,countSetBomb = 0;
-        while (countSetBomb < countBobm) {
-            do {
-               x = rnd.nextInt(row);
-               y = rnd.nextInt(coll);
-            } while (hexagons[x][y].isHasBomb());
-            hexagons[x][y].setHasBomb(true);
-            shaheed.add(new Pair<>(x, y));
-            countSetBomb++;
-        }
-        for (y = 0; y < coll; y++) {
-            for (x = 0; x < row; x++) {
-                long bombs = getNeighbors(x, y).stream().filter(t -> t.isHasBomb()).count();
-                if (bombs > 0) {
-                    hexagons[x][y].setCountBombAround(bombs);
-                }
-            }
-        }*/
+
         for (Hexagon[] line : hexagons) {
             for (Hexagon test : line) {
                 boardPane.getChildren().add(test);
