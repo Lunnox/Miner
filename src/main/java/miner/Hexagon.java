@@ -117,4 +117,8 @@ public void setHasBomb(boolean active){
     hasBomb = active;
         image = new Image("bomb.jpg");
 }
+public void setFill(){
+
+    hexagon.setFill(Color.RED);
+}
 }
