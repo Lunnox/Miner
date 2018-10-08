@@ -12,8 +12,6 @@ package miner;
 import javafx.application.Application;
 import javafx.application.Platform;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -24,9 +22,10 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Pair;
+import miner.Model.Hexagon;
+import miner.Model.Point3D;
 
 
-import java.io.IOException;
 import java.util.*;
 
 

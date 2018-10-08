@@ -1,4 +1,4 @@
-package miner;
+package miner.Model;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;

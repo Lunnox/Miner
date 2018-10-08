@@ -1,4 +1,4 @@
-package miner;
+package miner.Model;
 
 import javafx.beans.NamedArg;
 import javafx.geometry.Point2D;
